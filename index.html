@@ -1,338 +1,816 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Algebra Practice Tool</title>
-  <style>
-    :root {
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-      --success: #16a34a;
-      --error: #dc2626;
-      --border: #e2e8f0;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AlgebraLab — Master Mathematics</title>
 
-    * {
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
+<style>
+:root {
+  --bg:#f4f6fc;
+  --surface:#fff;
+  --surface2:#f0f2fa;
+  --text:#19213b;
+  --muted:#7b849e;
+  --primary:#6558e8;
+  --primary2:#8878ff;
+  --green:#16a36a;
+  --red:#e34d68;
+  --border:#e7e9f2;
+  --shadow:0 12px 40px #252b5010;
+}
 
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-    }
+body.dark {
+  --bg:#101322;
+  --surface:#191e32;
+  --surface2:#222942;
+  --text:#f2f3ff;
+  --muted:#a2aac4;
+  --border:#303751;
+  --shadow:0 12px 40px #0003;
+}
 
-    .container {
-      background: var(--card);
-      width: 100%;
-      max-width: 480px;
-      padding: 32px;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
-      border: 1px solid var(--border);
-    }
+* {box-sizing:border-box}
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-    }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,sans-serif;
+  min-height:100vh;
+  transition:.25s;
+}
 
-    h1 {
-      font-size: 1.4rem;
-      margin: 0;
-    }
+button,select,input {font:inherit}
+button {cursor:pointer}
 
-    .stats {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--muted);
-      background: var(--bg);
-      padding: 6px 12px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-    }
+.app {
+  max-width:1100px;
+  margin:auto;
+  padding:25px;
+}
 
-    .controls {
-      margin-bottom: 24px;
-    }
+nav {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:32px;
+}
 
-    label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
+.brand {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-weight:850;
+  font-size:22px;
+  letter-spacing:-1px;
+}
 
-    select {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      font-size: 1rem;
-      background-color: var(--card);
-      color: var(--text);
-      cursor: pointer;
-    }
+.logo {
+  width:43px;height:43px;
+  border-radius:14px;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,#6558e8,#a58cff);
+  color:white;font-size:24px;
+  box-shadow:0 6px 18px #6558e855;
+}
 
-    .problem-box {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 28px 20px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
+.nav-right {display:flex;gap:10px;align-items:center}
 
-    .instruction {
-      font-size: 0.9rem;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
+.icon-btn {
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text);
+  padding:10px 13px;
+  border-radius:12px;
+}
 
-    .equation {
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-    }
+.hero {
+  background:linear-gradient(120deg,#5145d9,#8271fa);
+  color:white;
+  border-radius:24px;
+  padding:32px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 15px 35px #6558e833;
+}
 
-    .input-group {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
+.hero:after {
+  content:"∑";
+  position:absolute;
+  right:45px;top:-50px;
+  font-size:230px;
+  opacity:.12;
+  font-weight:900;
+}
 
-    .x-prefix {
-      display: flex;
-      align-items: center;
-      font-size: 1.25rem;
-      font-weight: 600;
-      padding-left: 4px;
-    }
+.hero h1 {
+  font-size:34px;
+  margin:0 0 9px;
+  letter-spacing:-1.5px;
+}
 
-    input[type="number"] {
-      flex: 1;
-      padding: 12px 14px;
-      font-size: 1.15rem;
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
+.hero p {opacity:.85;margin:0}
 
-    input[type="number"]:focus {
-      border-color: var(--primary);
-    }
+.hero-bottom {
+  display:flex;
+  gap:12px;
+  margin-top:25px;
+  flex-wrap:wrap;
+}
 
-    button {
-      padding: 12px 20px;
-      font-size: 1rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
+.hero-pill {
+  background:#ffffff24;
+  border:1px solid #ffffff35;
+  padding:9px 15px;
+  border-radius:30px;
+  font-size:13px;
+}
 
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
+.stats {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+  margin:22px 0;
+}
 
-    .btn-primary:hover {
-      background: var(--primary-hover);
-    }
+.stat {
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:19px;
+  border-radius:17px;
+  box-shadow:var(--shadow);
+}
 
-    .btn-secondary {
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      width: 100%;
-    }
+.stat-label {font-size:12px;color:var(--muted)}
+.stat-value {font-size:27px;font-weight:850;margin-top:7px}
+.stat-icon {float:right;font-size:21px}
 
-    .btn-secondary:hover {
-      background: #e2e8f0;
-    }
+.section-title {
+  font-size:19px;
+  font-weight:800;
+  margin:28px 0 15px;
+}
 
-    .feedback {
-      min-height: 28px;
-      text-align: center;
-      font-weight: 600;
-      font-size: 1rem;
-      margin-bottom: 16px;
-    }
+.layout {
+  display:grid;
+  grid-template-columns:1fr 310px;
+  gap:20px;
+  align-items:start;
+}
 
-    .correct { color: var(--success); }
-    .incorrect { color: var(--error); }
-  </style>
+.panel {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:24px;
+  box-shadow:var(--shadow);
+}
+
+label {
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+select {
+  width:100%;
+  padding:12px;
+  border-radius:11px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  color:var(--text);
+  margin-bottom:17px;
+  outline:none;
+}
+
+.progress-info {
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  color:var(--muted);
+  margin:15px 0 8px;
+}
+
+.progress {
+  height:8px;
+  background:var(--surface2);
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.progress div {
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#6558e8,#a58cff);
+  border-radius:20px;
+  transition:.4s;
+}
+
+.problem {
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:16px;
+  text-align:center;
+  padding:35px 12px;
+  margin:20px 0;
+}
+
+.problem small {color:var(--muted)}
+.equation {
+  font-size:clamp(25px,5vw,39px);
+  font-weight:850;
+  margin-top:14px;
+  letter-spacing:-1px;
+  overflow-wrap:anywhere;
+}
+
+.answer-row {
+  display:flex;
+  gap:10px;
+}
+
+.answer-row input {
+  min-width:0;
+  flex:1;
+  padding:14px;
+  border:2px solid var(--border);
+  border-radius:12px;
+  background:var(--surface);
+  color:var(--text);
+  outline:none;
+}
+
+.answer-row input:focus {border-color:var(--primary)}
+
+.btn {
+  border:0;
+  border-radius:11px;
+  padding:13px 18px;
+  font-weight:750;
+  transition:.2s;
+}
+
+.btn:hover {transform:translateY(-2px)}
+.primary {background:var(--primary);color:white}
+.secondary {background:var(--surface2);color:var(--text)}
+.full {width:100%;margin-top:12px}
+
+.feedback {
+  text-align:center;
+  min-height:32px;
+  padding:12px 4px;
+  font-weight:750;
+}
+
+.good {color:var(--green)}
+.bad {color:var(--red)}
+
+.side-panel {display:grid;gap:16px}
+
+.xp-card {
+  background:linear-gradient(135deg,#f1efff,#e6e3ff);
+  color:#3f36a9;
+  padding:20px;
+  border-radius:17px;
+}
+
+body.dark .xp-card {
+  background:linear-gradient(135deg,#302c5c,#40366d);
+  color:#eeeaff;
+}
+
+.xp-number {font-size:27px;font-weight:900}
+
+.topic-list {display:grid;gap:9px}
+
+.topic-item {
+  padding:13px;
+  background:var(--surface2);
+  border-radius:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:13px;
+  cursor:pointer;
+  border:1px solid transparent;
+}
+
+.topic-item:hover {border-color:var(--primary)}
+
+.topic-item span:last-child {color:var(--muted)}
+
+.solution {
+  display:none;
+  padding:15px;
+  border-radius:12px;
+  background:var(--surface2);
+  font-size:14px;
+  line-height:1.8;
+  margin-top:12px;
+}
+
+.solution.show {display:block}
+
+.challenge {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.challenge h3 {margin:0 0 5px}
+.challenge p {color:var(--muted);font-size:12px;margin:0}
+
+.hidden {display:none!important}
+
+@media(max-width:750px) {
+  .layout {grid-template-columns:1fr}
+  .stats {grid-template-columns:repeat(2,1fr)}
+  .app {padding:15px}
+  .hero {padding:25px}
+  .hero h1 {font-size:27px}
+  .panel {padding:18px}
+}
+</style>
 </head>
+
 <body>
+<div class="app">
 
-<div class="container">
-  <header>
-    <h1>Algebra Practice</h1>
-    <div class="stats">Score: <span id="score">0</span> | Streak: <span id="streak">0</span></div>
-  </header>
+<nav>
+  <div class="brand">
+    <div class="logo">∑</div>
+    AlgebraLab
+  </div>
+  <div class="nav-right">
+    <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme">◐</button>
+    <button class="icon-btn" onclick="resetStats()">↻ Reset</button>
+  </div>
+</nav>
 
-  <div class="controls">
-    <label for="topic">Problem Type</label>
-    <select id="topic" onchange="generateProblem()">
-      <option value="one-step">One-Step Equations (x + a = b)</option>
-      <option value="two-step" selected>Two-Step Equations (ax + b = c)</option>
-      <option value="both-sides">Variables on Both Sides (ax + b = cx + d)</option>
-      <option value="distributive">Distributive Property (a(x + b) = c)</option>
-    </select>
+<section class="hero">
+  <h1>Master Algebra.</h1>
+  <p>Practice smarter. Solve faster. Become unstoppable.</p>
+  <div class="hero-bottom">
+    <div class="hero-pill">📚 Interactive learning</div>
+    <div class="hero-pill">⚡ Earn XP</div>
+    <div class="hero-pill">🎯 Track progress</div>
+  </div>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <span class="stat-icon">🏆</span>
+    <div class="stat-label">Total XP</div>
+    <div class="stat-value" id="xp">0</div>
+  </div>
+  <div class="stat">
+    <span class="stat-icon">✅</span>
+    <div class="stat-label">Correct answers</div>
+    <div class="stat-value" id="correct">0</div>
+  </div>
+  <div class="stat">
+    <span class="stat-icon">🔥</span>
+    <div class="stat-label">Current streak</div>
+    <div class="stat-value" id="streak">0</div>
+  </div>
+  <div class="stat">
+    <span class="stat-icon">🎯</span>
+    <div class="stat-label">Accuracy</div>
+    <div class="stat-value" id="accuracy">0%</div>
+  </div>
+</div>
+
+<div class="layout">
+
+<main class="panel">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+    <div class="section-title" style="margin:0">Practice Arena</div>
+    <span style="font-size:12px;color:var(--muted)" id="questionCount">Question 1</span>
   </div>
 
-  <div class="problem-box">
-    <div class="instruction">Solve for <strong>x</strong></div>
+  <div class="progress-info">
+    <span>Session progress</span>
+    <span id="progressText">0 solved</span>
+  </div>
+  <div class="progress"><div id="progressBar"></div></div>
+
+  <label for="topic" style="margin-top:23px">ALGEBRA TOPIC</label>
+  <select id="topic" onchange="generateProblem()">
+    <option value="one-step">One-Step Equations</option>
+    <option value="two-step" selected>Two-Step Equations</option>
+    <option value="both-sides">Variables on Both Sides</option>
+    <option value="distributive">Distributive Property</option>
+    <option value="combine">Combining Like Terms</option>
+    <option value="fractions">Fraction Equations</option>
+    <option value="decimals">Decimal Equations</option>
+    <option value="inequalities">Inequalities</option>
+  </select>
+
+  <label for="difficulty">DIFFICULTY</label>
+  <select id="difficulty" onchange="generateProblem()">
+    <option value="easy">Beginner</option>
+    <option value="medium" selected>Intermediate</option>
+    <option value="hard">Advanced</option>
+    <option value="expert">Expert</option>
+  </select>
+
+  <div class="problem">
+    <small>SOLVE FOR X</small>
     <div class="equation" id="equation">2x + 5 = 13</div>
   </div>
 
-  <div class="input-group">
-    <span class="x-prefix">x =</span>
-    <input type="number" id="answer-input" placeholder="Enter integer..." onkeydown="handleKey(event)">
-    <button class="btn-primary" onclick="checkAnswer()">Check</button>
+  <div class="answer-row">
+    <input id="answer" type="text" placeholder="Enter your answer..." autocomplete="off">
+    <button class="btn primary" onclick="checkAnswer()">Check ✓</button>
   </div>
 
   <div class="feedback" id="feedback"></div>
 
-  <button class="btn-secondary" onclick="generateProblem()">Next Problem &rarr;</button>
+  <button class="btn secondary full" onclick="showHint()">💡 Get a hint</button>
+  <button class="btn secondary full" onclick="showSolution()">📖 Show solution steps</button>
+
+  <div class="solution" id="solution"></div>
+
+  <button class="btn primary full" onclick="nextProblem()" id="nextButton">
+    Next Problem →
+  </button>
+
+</main>
+
+<aside class="side-panel">
+
+  <div class="xp-card">
+    <div style="font-size:12px;font-weight:750">YOUR LEVEL</div>
+    <div class="xp-number" id="level">Level 1</div>
+    <p style="font-size:12px" id="levelName">Algebra Beginner</p>
+    <div class="progress" style="background:#ffffff55">
+      <div id="levelBar" style="background:#6558e8"></div>
+    </div>
+    <p style="font-size:11px" id="levelProgress">0 / 100 XP</p>
+  </div>
+
+  <div class="panel">
+    <div class="section-title" style="margin-top:0">⚡ Quick Challenge</div>
+    <div class="challenge">
+      <div>
+        <h3>60 Second Rush</h3>
+        <p>Solve as many as possible!</p>
+      </div>
+      <button class="btn primary" onclick="startTimer()" id="timerButton">Start</button>
+    </div>
+    <div id="timer" style="font-size:30px;font-weight:900;margin-top:15px">01:00</div>
+    <div id="rushResult" style="font-size:13px;color:var(--muted)"></div>
+  </div>
+
+  <div class="panel">
+    <div class="section-title" style="margin-top:0">📚 Topics</div>
+    <div class="topic-list">
+      <div class="topic-item" onclick="setTopic('one-step')">One-Step <span>→</span></div>
+      <div class="topic-item" onclick="setTopic('two-step')">Two-Step <span>→</span></div>
+      <div class="topic-item" onclick="setTopic('both-sides')">Both Sides <span>→</span></div>
+      <div class="topic-item" onclick="setTopic('distributive')">Distributive <span>→</span></div>
+      <div class="topic-item" onclick="setTopic('combine')">Like Terms <span>→</span></div>
+      <div class="topic-item" onclick="setTopic('fractions')">Fractions <span>→</span></div>
+      <div class="topic-item" onclick="setTopic('decimals')">Decimals <span>→</span></div>
+      <div class="topic-item" onclick="setTopic('inequalities')">Inequalities <span>→</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="section-title" style="margin-top:0">🏅 Achievements</div>
+    <div id="achievements" style="font-size:13px;line-height:2.2"></div>
+  </div>
+
+</aside>
+</div>
 </div>
 
 <script>
-  let currentAnswer = 0;
-  let score = 0;
-  let streak = 0;
-  let solvedCurrent = false;
+let answer = 0;
+let solutionText = "";
+let hintText = "";
+let streak = 0;
+let xp = 0;
+let correct = 0;
+let attempts = 0;
+let solved = false;
+let questionNumber = 0;
+let rush = false;
+let rushCorrect = 0;
+let rushTime = 60;
+let rushInterval = null;
+let rushEnd = false;
 
-  // Helper to get random integer between min and max (inclusive)
-  function randInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+const $ = id => document.getElementById(id);
+
+function random(min,max) {
+  return Math.floor(Math.random()*(max-min+1))+min;
+}
+
+function nonzero(min,max) {
+  let n=0;
+  while(!n)n=random(min,max);
+  return n;
+}
+
+function term(n) {
+  return n>=0 ? "+ "+n : "- "+Math.abs(n);
+}
+
+function coefficient(n) {
+  return n===1 ? "" : n===-1 ? "-" : n;
+}
+
+function ranges() {
+  const d=$("difficulty").value;
+  if(d==="easy")return {x:8,a:5,b:8};
+  if(d==="medium")return {x:12,a:9,b:15};
+  if(d==="hard")return {x:20,a:12,b:25};
+  return {x:35,a:18,b:40};
+}
+
+function generateProblem() {
+  const topic=$("topic").value;
+  const r=ranges();
+  const x=random(-r.x,r.x);
+  answer=x;
+  solved=false;
+
+  let eq="";
+  let hint="";
+  let steps=[];
+
+  const a=nonzero(-r.a,r.a);
+  const b=nonzero(-r.b,r.b);
+
+  if(topic==="one-step") {
+    const c=x+a;
+    eq=`x ${term(a)} = ${c}`;
+    hint="Undo the addition or subtraction.";
+    steps=[
+      `Original: x ${term(a)} = ${c}`,
+      `Subtract ${a} from both sides.`,
+      `x = ${x}`
+    ];
   }
 
-  // Helper to get non-zero random integer
-  function randNonZero(min, max) {
-    let num = 0;
-    while (num === 0) {
-      num = randInt(min, max);
-    }
-    return num;
+  if(topic==="two-step") {
+    const c=a*x+b;
+    eq=`${coefficient(a)}x ${term(b)} = ${c}`;
+    hint="First isolate the term containing x. Then divide.";
+    steps=[
+      `Original: ${eq}`,
+      `Subtract ${b} from both sides: ${a}x = ${a*x}`,
+      `Divide both sides by ${a}.`,
+      `x = ${x}`
+    ];
   }
 
-  // Format "+ b" or "- b" cleanly
-  function formatTerm(num) {
-    return num >= 0 ? `+ ${num}` : `- ${Math.abs(num)}`;
+  if(topic==="both-sides") {
+    let c=nonzero(-r.a,r.a);
+    while(c===a)c=nonzero(-r.a,r.a);
+    const d=(a-c)*x+b;
+    eq=`${coefficient(a)}x ${term(b)} = ${coefficient(c)}x ${term(d)}`;
+    hint="Move all x terms to one side and constants to the other.";
+    steps=[
+      `Original: ${eq}`,
+      `Subtract ${c}x from both sides.`,
+      `Subtract ${b} from both sides.`,
+      `Divide by ${a-c}.`,
+      `x = ${x}`
+    ];
   }
 
-  function generateProblem() {
-    const topic = document.getElementById("topic").value;
-    const eqDisplay = document.getElementById("equation");
-    const feedback = document.getElementById("feedback");
-    const input = document.getElementById("answer-input");
-
-    feedback.textContent = "";
-    feedback.className = "feedback";
-    input.value = "";
-    input.focus();
-    solvedCurrent = false;
-
-    // Generate clean integer solution first so problems always work out evenly
-    const x = randInt(-12, 12);
-    currentAnswer = x;
-
-    if (topic === "one-step") {
-      const a = randNonZero(-15, 15);
-      const b = x + a;
-      eqDisplay.textContent = `x ${formatTerm(a)} = ${b}`;
-
-    } else if (topic === "two-step") {
-      const a = randNonZero(-9, 9);
-      const b = randNonZero(-15, 15);
-      const c = a * x + b;
-      const aStr = a === 1 ? "" : (a === -1 ? "-" : a);
-      eqDisplay.textContent = `${aStr}x ${formatTerm(b)} = ${c}`;
-
-    } else if (topic === "both-sides") {
-      let a = randNonZero(-8, 8);
-      let c = randNonZero(-8, 8);
-      while (a === c) { c = randNonZero(-8, 8); } // Ensure variables don't cancel out
-      const b = randNonZero(-12, 12);
-      const d = (a - c) * x + b;
-
-      const aStr = a === 1 ? "" : (a === -1 ? "-" : a);
-      const cStr = c === 1 ? "" : (c === -1 ? "-" : c);
-      eqDisplay.textContent = `${aStr}x ${formatTerm(b)} = ${cStr}x ${formatTerm(d)}`;
-
-    } else if (topic === "distributive") {
-      const a = randNonZero(-6, 6);
-      const b = randNonZero(-9, 9);
-      const c = a * (x + b);
-      const aStr = a === 1 ? "" : (a === -1 ? "-" : a);
-      eqDisplay.textContent = `${aStr}(x ${formatTerm(b)}) = ${c}`;
-    }
+  if(topic==="distributive") {
+    const c=a*(x+b);
+    eq=`${coefficient(a)}(x ${term(b)}) = ${c}`;
+    hint="Distribute the number outside the parentheses.";
+    steps=[
+      `Original: ${eq}`,
+      `Divide both sides by ${a}.`,
+      `x ${term(b)} = ${c/a}`,
+      `Undo the addition or subtraction.`,
+      `x = ${x}`
+    ];
   }
 
-  function checkAnswer() {
-    const input = document.getElementById("answer-input");
-    const feedback = document.getElementById("feedback");
-    const userVal = parseFloat(input.value);
-
-    if (isNaN(userVal)) {
-      feedback.textContent = "Please enter a number.";
-      feedback.className = "feedback incorrect";
-      return;
-    }
-
-    if (userVal === currentAnswer) {
-      feedback.textContent = "Correct! Great job.";
-      feedback.className = "feedback correct";
-      if (!solvedCurrent) {
-        score += 10;
-        streak += 1;
-        solvedCurrent = true;
-        updateStats();
-      }
-    } else {
-      feedback.textContent = `Not quite. Try again!`;
-      feedback.className = "feedback incorrect";
-      streak = 0;
-      updateStats();
-    }
+  if(topic==="combine") {
+    const p=nonzero(-r.a,r.a);
+    const q=nonzero(-r.a,r.a);
+    const c=nonzero(-r.a,r.a);
+    const d=(p+q-c)*x+b;
+    eq=`${p}x ${term(q*x)} ${term(b)} = ${c}x ${term(d)}`;
+    hint="Combine the like terms on each side first.";
+    steps=[
+      `Original: ${eq}`,
+      `Combine like terms on each side.`,
+      `Move x terms to one side.`,
+      `Isolate x.`,
+      `x = ${x}`
+    ];
   }
 
-  function updateStats() {
-    document.getElementById("score").textContent = score;
-    document.getElementById("streak").textContent = streak;
+  if(topic==="fractions") {
+    const denominator=random(2,6);
+    const numerator=nonzero(-r.a,r.a);
+    const c=x+numerator/denominator;
+    // Construct a fraction equation with an integer answer.
+    eq=`x/${denominator} ${term(numerator)} = ${x/denominator+numerator}`;
+    answer=x;
+    hint="Undo the addition, then multiply by the denominator.";
+    steps=[
+      `Original: ${eq}`,
+      `Subtract ${numerator} from both sides.`,
+      `Multiply both sides by ${denominator}.`,
+      `x = ${x}`
+    ];
   }
 
-  function handleKey(event) {
-    if (event.key === "Enter") {
-      if (solvedCurrent) {
-        generateProblem();
-      } else {
-        checkAnswer();
-      }
-    }
+  if(topic==="decimals") {
+    const decimal=Number((random(1,90)/10).toFixed(1));
+    const c=Number((x+decimal).toFixed(1));
+    eq=`x + ${decimal} = ${c}`;
+    hint="Subtract the decimal from both sides.";
+    steps=[
+      `Original: ${eq}`,
+      `Subtract ${decimal} from both sides.`,
+      `x = ${x}`
+    ];
   }
 
-  // Initialize first problem on load
+  if(topic==="inequalities") {
+    const c=a*x+b;
+    const sign=["<",">","≤","≥"][random(0,3)];
+    const validX = sign===">" ? x-1 : sign==="<" ? x+1 :
+                   sign==="≥" ? x : x;
+    // Use a strict answer-boundary exercise with the boundary represented as a number.
+    eq=`${coefficient(a)}x ${term(b)} ${sign} ${c}`;
+    hint="Undo the addition, then divide. Reverse the inequality if dividing by a negative.";
+    steps=[
+      `Original: ${eq}`,
+      `Subtract ${b} from both sides.`,
+      `Divide by ${a}${a<0}. ${a<0?"Reverse the inequality sign.":"Keep the inequality sign."}`,
+      `Boundary value: x = ${x}`
+    ];
+    answer=x;
+  }
+
+  $("equation").textContent=eq;
+  hintText=hint;
+  solutionText=steps.map((s,i)=>`${i+1}. ${s}`).join("<br>");
+  $("feedback").textContent="";
+  $("feedback").className="feedback";
+  $("answer").value="";
+  $("solution").classList.remove("show");
+  $("questionCount").textContent="Question "+(++questionNumber);
+  $("nextButton").textContent="Next Problem →";
+  $("answer").focus();
+  updateStats();
+}
+
+function checkAnswer() {
+  if(solved)return;
+
+  const val=$("answer").value.trim();
+  const feedback=$("feedback");
+
+  if(!val || !Number.isFinite(Number(val))) {
+    feedback.textContent="Enter a valid number first.";
+    feedback.className="feedback bad";
+    return;
+  }
+
+  attempts++;
+
+  if(Math.abs(Number(val)-answer)<0.000001) {
+    solved=true;
+    correct++;
+    streak++;
+    const earned=10+Math.min(streak*2,20);
+    xp+=earned;
+    if(rush)rushCorrect++;
+    feedback.textContent=`✓ Correct! +${earned} XP. Amazing work!`;
+    feedback.className="feedback good";
+    $("nextButton").textContent="Next Question →";
+    updateStats();
+    achievements();
+  } else {
+    streak=0;
+    feedback.textContent="Not quite! Check your steps and try again.";
+    feedback.className="feedback bad";
+    updateStats();
+  }
+}
+
+function nextProblem() {
+  if(rushEnd)return;
   generateProblem();
-</script>
+}
 
+function showHint() {
+  $("solution").innerHTML="💡 <b>Hint:</b><br>"+hintText;
+  $("solution").classList.add("show");
+}
+
+function showSolution() {
+  $("solution").innerHTML="<b>Step-by-step solution</b><br>"+solutionText;
+  $("solution").classList.add("show");
+}
+
+function updateStats() {
+  $("xp").textContent=xp;
+  $("correct").textContent=correct;
+  $("streak").textContent=streak;
+  $("accuracy").textContent=attempts?Math.round(correct/attempts*100)+"%":"0%";
+  $("progressText").textContent=correct+" solved";
+  $("progressBar").style.width=Math.min(correct%10*10,100)+"%";
+
+  const level=Math.floor(xp/100)+1;
+  const progress=xp%100;
+  $("level").textContent="Level "+level;
+  $("levelName").textContent=[
+    "Algebra Beginner","Equation Explorer","Math Apprentice",
+    "Algebra Specialist","Equation Expert","Math Champion"
+  ][Math.min(level-1,5)];
+  $("levelBar").style.width=progress+"%";
+  $("levelProgress").textContent=progress+" / 100 XP";
+}
+
+function achievements() {
+  const list=[
+    [correct>=1,"🎯","First correct answer"],
+    [correct>=10,"⭐","10 problems solved"],
+    [streak>=5,"🔥","5 answer streak"],
+    [streak>=10,"🚀","10 answer streak"],
+    [xp>=100,"🏆","100 XP earned"],
+    [xp>=500,"👑","500 XP earned"]
+  ];
+  $("achievements").innerHTML=list.map(a=>
+    `<div style="opacity:${a[0]?1:.35}">${a[0]?"✓":"🔒"} ${a[1]} ${a[2]}</div>`
+  ).join("");
+}
+
+function setTopic(topic) {
+  $("topic").value=topic;
+  generateProblem();
+  window.scrollTo({top:300,behavior:"smooth"});
+}
+
+function toggleTheme() {
+  document.body.classList.toggle("dark");
+}
+
+function resetStats() {
+  if(!confirm("Reset all your current progress?"))return;
+  xp=correct=attempts=streak=questionNumber=0;
+  updateStats();
+  achievements();
+}
+
+function startTimer() {
+  if(rush)return;
+  rush=true;
+  rushEnd=false;
+  rushCorrect=0;
+  rushTime=60;
+  $("rushResult").textContent="";
+  $("timerButton").textContent="Running";
+  $("timerButton").disabled=true;
+  generateProblem();
+  $("timer").textContent="01:00";
+
+  rushInterval=setInterval(()=>{
+    rushTime--;
+    $("timer").textContent="00:"+String(rushTime).padStart(2,"0");
+
+    if(rushTime<=0) {
+      clearInterval(rushInterval);
+      rush=false;
+      rushEnd=true;
+      $("timerButton").disabled=false;
+      $("timerButton").textContent="Play again";
+      $("rushResult").textContent=`You solved ${rushCorrect} correctly!`;
+      $("feedback").textContent="Challenge completed!";
+      $("feedback").className="feedback good";
+    }
+  },1000);
+}
+
+$("answer").addEventListener("keydown",e=>{
+  if(e.key==="Enter") {
+    if(solved)nextProblem();
+    else checkAnswer();
+  }
+});
+
+achievements();
+generateProblem();
+</script>
 </body>
 </html>
-
