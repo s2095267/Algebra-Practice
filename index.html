@@ -1,1 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Algebra Practice Tool</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --success: #16a34a;
+      --error: #dc2626;
+      --border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      background: var(--card);
+      width: 100%;
+      max-width: 480px;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      margin: 0;
+    }
+
+    .stats {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: var(--bg);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .controls {
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 1rem;
+      background-color: var(--card);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .problem-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .instruction {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .equation {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .x-prefix {
+      display: flex;
+      align-items: center;
+      font-size: 1.25rem;
+      font-weight: 600;
+      padding-left: 4px;
+    }
+
+    input[type="number"] {
+      flex: 1;
+      padding: 12px 14px;
+      font-size: 1.15rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--primary);
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      width: 100%;
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+
+    .feedback {
+      min-height: 28px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 16px;
+    }
+
+    .correct { color: var(--success); }
+    .incorrect { color: var(--error); }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Algebra Practice</h1>
+    <div class="stats">Score: <span id="score">0</span> | Streak: <span id="streak">0</span></div>
+  </header>
+
+  <div class="controls">
+    <label for="topic">Problem Type</label>
+    <select id="topic" onchange="generateProblem()">
+      <option value="one-step">One-Step Equations (x + a = b)</option>
+      <option value="two-step" selected>Two-Step Equations (ax + b = c)</option>
+      <option value="both-sides">Variables on Both Sides (ax + b = cx + d)</option>
+      <option value="distributive">Distributive Property (a(x + b) = c)</option>
+    </select>
+  </div>
+
+  <div class="problem-box">
+    <div class="instruction">Solve for <strong>x</strong></div>
+    <div class="equation" id="equation">2x + 5 = 13</div>
+  </div>
+
+  <div class="input-group">
+    <span class="x-prefix">x =</span>
+    <input type="number" id="answer-input" placeholder="Enter integer..." onkeydown="handleKey(event)">
+    <button class="btn-primary" onclick="checkAnswer()">Check</button>
+  </div>
+
+  <div class="feedback" id="feedback"></div>
+
+  <button class="btn-secondary" onclick="generateProblem()">Next Problem &rarr;</button>
+</div>
+
+<script>
+  let currentAnswer = 0;
+  let score = 0;
+  let streak = 0;
+  let solvedCurrent = false;
+
+  // Helper to get random integer between min and max (inclusive)
+  function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  // Helper to get non-zero random integer
+  function randNonZero(min, max) {
+    let num = 0;
+    while (num === 0) {
+      num = randInt(min, max);
+    }
+    return num;
+  }
+
+  // Format "+ b" or "- b" cleanly
+  function formatTerm(num) {
+    return num >= 0 ? `+ ${num}` : `- ${Math.abs(num)}`;
+  }
+
+  function generateProblem() {
+    const topic = document.getElementById("topic").value;
+    const eqDisplay = document.getElementById("equation");
+    const feedback = document.getElementById("feedback");
+    const input = document.getElementById("answer-input");
+
+    feedback.textContent = "";
+    feedback.className = "feedback";
+    input.value = "";
+    input.focus();
+    solvedCurrent = false;
+
+    // Generate clean integer solution first so problems always work out evenly
+    const x = randInt(-12, 12);
+    currentAnswer = x;
+
+    if (topic === "one-step") {
+      const a = randNonZero(-15, 15);
+      const b = x + a;
+      eqDisplay.textContent = `x ${formatTerm(a)} = ${b}`;
+
+    } else if (topic === "two-step") {
+      const a = randNonZero(-9, 9);
+      const b = randNonZero(-15, 15);
+      const c = a * x + b;
+      const aStr = a === 1 ? "" : (a === -1 ? "-" : a);
+      eqDisplay.textContent = `${aStr}x ${formatTerm(b)} = ${c}`;
+
+    } else if (topic === "both-sides") {
+      let a = randNonZero(-8, 8);
+      let c = randNonZero(-8, 8);
+      while (a === c) { c = randNonZero(-8, 8); } // Ensure variables don't cancel out
+      const b = randNonZero(-12, 12);
+      const d = (a - c) * x + b;
+
+      const aStr = a === 1 ? "" : (a === -1 ? "-" : a);
+      const cStr = c === 1 ? "" : (c === -1 ? "-" : c);
+      eqDisplay.textContent = `${aStr}x ${formatTerm(b)} = ${cStr}x ${formatTerm(d)}`;
+
+    } else if (topic === "distributive") {
+      const a = randNonZero(-6, 6);
+      const b = randNonZero(-9, 9);
+      const c = a * (x + b);
+      const aStr = a === 1 ? "" : (a === -1 ? "-" : a);
+      eqDisplay.textContent = `${aStr}(x ${formatTerm(b)}) = ${c}`;
+    }
+  }
+
+  function checkAnswer() {
+    const input = document.getElementById("answer-input");
+    const feedback = document.getElementById("feedback");
+    const userVal = parseFloat(input.value);
+
+    if (isNaN(userVal)) {
+      feedback.textContent = "Please enter a number.";
+      feedback.className = "feedback incorrect";
+      return;
+    }
+
+    if (userVal === currentAnswer) {
+      feedback.textContent = "Correct! Great job.";
+      feedback.className = "feedback correct";
+      if (!solvedCurrent) {
+        score += 10;
+        streak += 1;
+        solvedCurrent = true;
+        updateStats();
+      }
+    } else {
+      feedback.textContent = `Not quite. Try again!`;
+      feedback.className = "feedback incorrect";
+      streak = 0;
+      updateStats();
+    }
+  }
+
+  function updateStats() {
+    document.getElementById("score").textContent = score;
+    document.getElementById("streak").textContent = streak;
+  }
+
+  function handleKey(event) {
+    if (event.key === "Enter") {
+      if (solvedCurrent) {
+        generateProblem();
+      } else {
+        checkAnswer();
+      }
+    }
+  }
+
+  // Initialize first problem on load
+  generateProblem();
+</script>
+
+</body>
+</html>
 
